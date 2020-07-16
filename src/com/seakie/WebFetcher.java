@@ -13,7 +13,7 @@ public class WebFetcher {
 		Document soup = conn.get();
 		if (conn.response().statusCode() == 200) {
 //			System.out.println(soup.text());
-			String line = soup.text().replaceAll("[^A-Za-z \\-]", " ").toLowerCase();
+			String line = soup.text().replaceAll("[^A-Za-z \\-]", " ");
 //			System.out.println(line);
 			String[] words = line.split("\\s+");
 			setDict(words);

@@ -43,31 +43,58 @@ public class Dictionary extends HashMap<String, Word> {
 	private void translate(ArrayList<Word> words) {
 		StringBuilder parts = new StringBuilder();
 		
+		StringBuilder accumulation = new StringBuilder();
 		for (int index = 0; index < words.size(); index++){
-			parts.append(words.get(index).getWord() + " / ");
+			parts.append(words.get(index).getWord() + "\n");
+			
+			// url cannot be too long
+			if (parts.length() >= 4500) {
+				// send at once
+				try {
+//					System.out.println(parts.toString());
+					String temp = trans(parts.toString());
+					accumulation.append(temp);
+					accumulation.append("\n");
+//					System.out.println(temp);
+//					System.out.println("==============");
+					parts.setLength(0);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
-		String meanings = null;
+		// send the rest
 		try {
 //			System.out.println(parts.toString());
-			meanings = trans(parts.toString());
-//			System.out.println(meanings);
+			String temp = trans(parts.toString());
+			accumulation.append(temp);
+			accumulation.append("\n");
+//			System.out.println(temp);
+//			System.out.println("==============");
+			parts.setLength(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		
-		String[] meaning = meanings.split("/");
-		cleanDup(meaning);
+		
+		String[] meaning = accumulation.toString().split("\n");
+//		cleanDup(meaning);
 		for (int index = 0; index < words.size(); index++) {
-			words.get(index).setMeaning(meaning[index]);
+			if (index < meaning.length){
+				words.get(index).setMeaning(meaning[index]);
+			}
 		}
 	}
 
 	public void cleanDup(String[] meaning) {
 		ArrayList<String> list = new ArrayList<String>();
 		
-		for (int index = 0; index < meaning.length - 1; index++) {
-			if (meaning[index].equals(meaning[index + 1]) == false){
+		for (int index = 0; index < meaning.length; index++) {
+			if (index == 0) {
+				list.add(meaning[index]);
+			} else if (meaning[index].equals(meaning[index - 1]) == false){
 				list.add(meaning[index]);
 			}
 		}
